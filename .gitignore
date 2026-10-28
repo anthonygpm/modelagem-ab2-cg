@@ -1,0 +1,9 @@
+build/
+cmake-build-*/
+out/
+.vs/
+.vscode/
+.idea/
+*.exe
+captura_*.png
+__pycache__/
