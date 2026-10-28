@@ -32,6 +32,8 @@ endif()
 
 add_executable(sala-de-aula
     src/main.cpp
+    src/Camera.cpp
+    src/Primitivas.cpp
 )
 
 target_include_directories(sala-de-aula PRIVATE src)
