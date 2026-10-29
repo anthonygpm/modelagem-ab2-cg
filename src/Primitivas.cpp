@@ -2,6 +2,7 @@
 
 #include <GL/freeglut.h>
 
+#include <algorithm>
 #include <cmath>
 
 // Retângulo com canto em p e lados u e v. A normal é u x v.
