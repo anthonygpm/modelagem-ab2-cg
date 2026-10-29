@@ -5,9 +5,16 @@
 
 #include "Camera.h"
 #include "Cena.h"
+#include "Texturas.h"
 
 #include <algorithm>
 #include <cctype>
+
+// Constantes do OpenGL 1.2/1.3 que o cabeçalho do Windows não declara
+#ifndef GL_LIGHT_MODEL_COLOR_CONTROL
+#define GL_LIGHT_MODEL_COLOR_CONTROL 0x81F8
+#define GL_SEPARATE_SPECULAR_COLOR 0x81FA
+#endif
 
 static int largura = 1280, altura = 720;
 static bool teclas[256];          // teclas pressionadas no momento (W, A, S, D)
@@ -100,6 +107,7 @@ static void iniciarOpenGL()
     glEnable(GL_NORMALIZE);   // corrige as normais depois de glScalef
     glShadeModel(GL_SMOOTH);  // Gouraud: cor interpolada entre os vértices
     glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);   // reflexo especular calculado com a posição real do olho
+    glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);   // reflexo não é escurecido pela textura
 }
 
 int main(int argc, char** argv)
@@ -110,6 +118,7 @@ int main(int argc, char** argv)
     glutCreateWindow("Sala de Aula 3D - UFAL");
 
     iniciarOpenGL();
+    carregarTexturas();
 
     glutDisplayFunc(desenhar);
     glutIdleFunc(atualizar);

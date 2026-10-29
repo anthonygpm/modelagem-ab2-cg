@@ -1,6 +1,7 @@
 #include "Cena.h"
 #include "Materiais.h"
 #include "Primitivas.h"
+#include "Texturas.h"
 
 #include <algorithm>
 
@@ -33,22 +34,22 @@ void desenharSala()
     for (int i = 0; i < NUM_PAREDES; i++) {
         const Caixa& p = PAREDES[i];
         if (p.y0 < BARRADO) {
-            material(0.60f, 0.70f, 0.78f, 0.25f, 24);
+            material(0.60f, 0.70f, 0.78f, 0.25f, 24, tex.parede);
             caixa(p.x0, p.y0, p.z0, p.x1, std::min(p.y1, BARRADO), p.z1, 2.0f);
         }
         if (p.y1 > BARRADO) {
-            material(0.97f, 0.96f, 0.93f, 0.05f, 8);
+            material(0.97f, 0.96f, 0.93f, 0.05f, 8, tex.parede);
             caixa(p.x0, std::max(p.y0, BARRADO), p.z0, p.x1, p.y1, p.z1, 2.0f);
         }
     }
 
-    // Piso
-    material(0.78f, 0.76f, 0.72f, 0.35f, 48);
+    // Piso de granilite (placas de 60 cm; a textura tem 2x2 placas)
+    material(1, 1, 1, 0.35f, 48, tex.piso);
     caixa(X_MIN, -0.1f, Z_MIN, X_MAX, 0, Z_MAX, 1.2f);
     caixa(X_MAX, -0.1f, CORREDOR_Z0, CORREDOR_X1, 0, CORREDOR_Z1, 1.2f);
 
     // Forro do teto
-    material(0.92f, 0.92f, 0.92f, 0.03f, 4);
+    material(1, 1, 1, 0.03f, 4, tex.forro);
     caixa(X_MIN, ALTURA, Z_MIN, X_MAX, ALTURA + 0.1f, Z_MAX, 1.25f);
     caixa(X_MAX, ALTURA, CORREDOR_Z0, CORREDOR_X1, ALTURA + 0.1f, CORREDOR_Z1, 1.25f);
 
@@ -60,15 +61,18 @@ void desenharSala()
     bloco(X_MAX - 0.008f, 0.04f, (Z_MIN + PORTA_Z0) / 2, 0.015f, 0.08f, PORTA_Z0 - Z_MIN);
     bloco(X_MAX - 0.008f, 0.04f, (PORTA_Z1 + Z_MAX) / 2, 0.015f, 0.08f, Z_MAX - PORTA_Z1);
 
-    // Lado de fora da janela: céu e grama, sem iluminação
+    // Lado de fora da janela: paisagem e grama, sem iluminação
     glDisable(GL_LIGHTING);
-    glColor3f(0.55f, 0.75f, 0.95f);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, tex.paisagem);
+    glColor3f(1, 1, 1);
     glPushMatrix();
     glTranslatef(-14, 2, 0);
     glRotatef(90, 0, 1, 0);   // plano virado para a janela
     glScalef(40, 16, 1);
     plano();
     glPopMatrix();
+    glDisable(GL_TEXTURE_2D);
 
     glColor3f(0.33f, 0.45f, 0.24f);
     bloco(-9.6f, -0.55f, 0, 9.2f, 0.1f, 40);

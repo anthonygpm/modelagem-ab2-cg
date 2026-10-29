@@ -36,8 +36,13 @@ add_executable(sala-de-aula
     src/Cena.cpp
     src/Primitivas.cpp
     src/Materiais.cpp
+    src/Texturas.cpp
     src/objects/Sala.cpp
 )
 
 target_include_directories(sala-de-aula PRIVATE src)
+target_include_directories(sala-de-aula SYSTEM PRIVATE external/stb)
 target_link_libraries(sala-de-aula PRIVATE ${BIBLIOTECA_GLUT} OpenGL::GLU OpenGL::GL)
+
+# Pasta do projeto, para achar assets/ de qualquer lugar
+target_compile_definitions(sala-de-aula PRIVATE PASTA_PROJETO="${CMAKE_SOURCE_DIR}")
