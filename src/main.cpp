@@ -4,7 +4,7 @@
 #include <GL/freeglut.h>
 
 #include "Camera.h"
-#include "Primitivas.h"
+#include "Cena.h"
 
 #include <algorithm>
 #include <cctype>
@@ -13,26 +13,6 @@ static int largura = 1280, altura = 720;
 static bool teclas[256];          // teclas pressionadas no momento (W, A, S, D)
 static bool correndo = false;     // Shift pressionado
 static int tempoAnterior = 0;     // em milissegundos
-
-// Cena de teste: um piso quadriculado de cubos coloridos para testar a câmera
-static void desenharCubosDeTeste()
-{
-    for (int i = -5; i <= 5; i++) {
-        for (int j = -5; j <= 5; j++) {
-            if ((i + j) % 2 == 0) glColor3f(0.8f, 0.8f, 0.8f);
-            else glColor3f(0.3f, 0.5f, 0.8f);
-            glPushMatrix();
-            glTranslatef((float)i, -0.05f, (float)j);
-            glScalef(1, 0.1f, 1);
-            cubo();
-            glPopMatrix();
-        }
-    }
-    glColor3f(0.9f, 0.3f, 0.2f);
-    bloco(0, 0.5f, -3, 1, 1, 1);
-    glColor3f(0.2f, 0.8f, 0.3f);
-    bloco(2, 1, -2, 0.5f, 2, 0.5f);
-}
 
 // ---------------------------------------------------------------------------
 // Callbacks do GLUT
@@ -46,11 +26,12 @@ static void desenhar()
     glLoadIdentity();
     gluPerspective(70, (double)largura / std::max(altura, 1), 0.05, 100);
 
-    // Câmera e objetos
+    // Câmera, luzes (dependem da câmera) e objetos
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     aplicarCamera();
-    desenharCubosDeTeste();
+    configurarLuzes();
+    desenharCena();
     glutSwapBuffers();
 }
 
@@ -114,6 +95,11 @@ static void iniciarOpenGL()
 {
     glClearColor(0.02f, 0.02f, 0.03f, 1);
     glEnable(GL_DEPTH_TEST);
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_NORMALIZE);   // corrige as normais depois de glScalef
+    glShadeModel(GL_SMOOTH);  // Gouraud: cor interpolada entre os vértices
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);   // reflexo especular calculado com a posição real do olho
 }
 
 int main(int argc, char** argv)
