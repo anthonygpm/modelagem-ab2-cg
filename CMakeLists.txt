@@ -38,6 +38,10 @@ add_executable(sala-de-aula
     src/Materiais.cpp
     src/Texturas.cpp
     src/objects/Sala.cpp
+    src/objects/Mesa.cpp
+    src/objects/Cadeira.cpp
+    src/objects/Quadro.cpp
+    src/objects/Lixeira.cpp
 )
 
 target_include_directories(sala-de-aula PRIVATE src)

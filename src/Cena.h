@@ -1,5 +1,6 @@
 #pragma once
 
+#include <initializer_list>
 
 // ---------------------------------------------------------------------------
 // Dimensões da sala, em metros. Origem no centro do piso.
@@ -37,3 +38,7 @@ void desenharCena();
 // Cena.cpp posiciona cada um com glTranslatef e glRotatef.
 // ---------------------------------------------------------------------------
 void desenharSala();
+void desenharMesa(float largura, float profundidade, float altura, bool painelFrontal);
+void desenharCadeira(float r, float g, float b);
+void desenharQuadro();
+void desenharLixeira();

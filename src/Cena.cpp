@@ -5,6 +5,10 @@
 #include <cmath>
 
 
+// Posição das carteiras dos alunos (3 fileiras x 4 colunas)
+static const float FILEIRAS_Z[] = {-1.2f, 0.3f, 1.8f};
+static const float COLUNAS_X[] = {-3.3f, -1.1f, 1.1f, 3.3f};
+
 // Posição (x, z) das 4 luminárias da sala
 static const float LUMINARIAS[4][2] = {{-2.3f, -1.6f}, {2.3f, -1.6f}, {-2.3f, 1.8f}, {2.3f, 1.8f}};
 
@@ -63,4 +67,40 @@ static void posicionar(float x, float y, float z, float rotacaoY = 0)
 void desenharCena()
 {
     desenharSala();
+
+    // Carteiras: o mesmo modelo desenhado 12 vezes em posições diferentes
+    for (float z : FILEIRAS_Z) {
+        for (float x : COLUNAS_X) {
+            glPushMatrix();
+            posicionar(x, 0, z);
+            desenharMesa(0.9f, 0.55f, 0.75f, false);
+            glPopMatrix();
+
+            glPushMatrix();
+            posicionar(x, 0, z + 0.45f);
+            desenharCadeira(0.13f, 0.30f, 0.62f);
+            glPopMatrix();
+        }
+    }
+
+    // Mesa e cadeira do professor: giradas 180° para ficarem de frente para a turma
+    glPushMatrix();
+    posicionar(-2.6f, 0, -2.4f, 180);
+    desenharMesa(1.4f, 0.7f, 0.76f, true);
+    glPopMatrix();
+
+    glPushMatrix();
+    posicionar(-2.6f, 0, -3.15f, 180);
+    desenharCadeira(0.12f, 0.12f, 0.13f);
+    glPopMatrix();
+
+    glPushMatrix();
+    posicionar(0, 0, Z_MIN);
+    desenharQuadro();
+    glPopMatrix();
+
+    glPushMatrix();
+    posicionar(4.6f, 0, 3.6f);
+    desenharLixeira();
+    glPopMatrix();
 }

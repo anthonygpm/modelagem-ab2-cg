@@ -50,6 +50,8 @@ void carregarTexturas()
     tex.parede   = carregar("parede.png");
     tex.forro    = carregar("forro.png");
     tex.paisagem = carregar("paisagem.png");
+    tex.madeira  = carregar("madeira.png");
+    tex.quadro   = carregar("quadro.png");
 
     // A cor da textura é multiplicada pela cor calculada pela iluminação
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
