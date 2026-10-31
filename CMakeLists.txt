@@ -42,6 +42,8 @@ add_executable(sala-de-aula
     src/objects/Cadeira.cpp
     src/objects/Quadro.cpp
     src/objects/Lixeira.cpp
+    src/objects/Lampada.cpp
+    src/objects/Interruptor.cpp
 )
 
 target_include_directories(sala-de-aula PRIVATE src)

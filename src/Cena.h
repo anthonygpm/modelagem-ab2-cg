@@ -28,11 +28,38 @@ extern const Caixa PAREDES[];
 extern const int NUM_PAREDES;
 
 // ---------------------------------------------------------------------------
+// Estado dos objetos interativos.
+// Os booleanos dizem o que o usuário pediu; os floats de 0 a 1 são o
+// progresso da animação, que anda aos poucos até o valor pedido.
+// ---------------------------------------------------------------------------
+struct Estado {
+    bool luzesLigadas = true;
+
+    float tempo = 0;          // segundos desde o início
+};
+extern Estado estado;
+
+// Avança "atual" em direção a "alvo" no máximo "passo" por quadro
+float aproximar(float atual, float alvo, float passo);
+// Suaviza uma animação de 0 a 1 (começa e termina devagar)
+float suavizar(float t);
+
+// ---------------------------------------------------------------------------
 // Cena
 // ---------------------------------------------------------------------------
+void atualizarCena(float dt);
 void configurarLuzes();   // chamar depois de posicionar a câmera
 void desenharCena();
 bool colide(float x, float z);   // o jogador em (x, z) bate em algo?
+
+// Interação com a tecla E
+enum Alvo {
+    NENHUM,
+    INTERRUPTOR,
+};
+Alvo alvoNaMira();
+void interagir(Alvo alvo);
+const char* dica(Alvo alvo);
 
 // ---------------------------------------------------------------------------
 // Objetos (pasta objects/). Cada função desenha o objeto na origem;
@@ -43,3 +70,5 @@ void desenharMesa(float largura, float profundidade, float altura, bool painelFr
 void desenharCadeira(float r, float g, float b);
 void desenharQuadro();
 void desenharLixeira();
+void desenharLampada(bool acesa);
+void desenharInterruptor();

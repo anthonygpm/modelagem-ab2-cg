@@ -22,6 +22,72 @@ static bool correndo = false;     // Shift pressionado
 static int tempoAnterior = 0;     // em milissegundos
 
 // ---------------------------------------------------------------------------
+// HUD: mira e dica de interação, desenhadas em 2D por cima da cena
+// ---------------------------------------------------------------------------
+static void texto(float x, float y, const char* s)
+{
+    glRasterPos2f(x, y);
+    glutBitmapString(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)s);
+}
+
+static int larguraTexto(const char* s)
+{
+    return glutBitmapLength(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)s);
+}
+
+static void fundo(float x0, float y0, float x1, float y1)
+{
+    glColor4f(0.06f, 0.07f, 0.1f, 0.75f);   // preto semitransparente
+    glBegin(GL_QUADS);
+    glVertex2f(x0, y0);
+    glVertex2f(x1, y0);
+    glVertex2f(x1, y1);
+    glVertex2f(x0, y1);
+    glEnd();
+}
+
+static void caixaDeTexto(float x, float y, const char* s)
+{
+    fundo(x - 14, y - 12, x + larguraTexto(s) + 14, y + 24);
+    glColor3f(1, 1, 1);
+    texto(x, y, s);
+}
+
+static void desenharHUD()
+{
+    // Projeção ortográfica em pixels, sem iluminação e sem teste de profundidade
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0, largura, 0, altura);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_TEXTURE_2D);
+
+    Alvo alvo = alvoNaMira();
+    float cx = largura / 2.0f, cy = altura / 2.0f;
+
+    // Mira: fica amarela e maior quando há algo para interagir
+    float t = alvo != NENHUM ? 11 : 7;
+    if (alvo != NENHUM) glColor3f(1, 0.82f, 0.25f);
+    else glColor3f(1, 1, 1);
+    glLineWidth(2);
+    glBegin(GL_LINES);
+    glVertex2f(cx - t, cy);
+    glVertex2f(cx + t, cy);
+    glVertex2f(cx, cy - t);
+    glVertex2f(cx, cy + t);
+    glEnd();
+
+    if (alvo != NENHUM)
+        caixaDeTexto(cx - larguraTexto(dica(alvo)) / 2.0f, altura * 0.2f, dica(alvo));
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
+}
+
+// ---------------------------------------------------------------------------
 // Callbacks do GLUT
 // ---------------------------------------------------------------------------
 static void desenhar()
@@ -39,10 +105,12 @@ static void desenhar()
     aplicarCamera();
     configurarLuzes();
     desenharCena();
+
+    desenharHUD();
     glutSwapBuffers();
 }
 
-// Chamada continuamente: move o jogador e pede um novo quadro
+// Chamada continuamente: move o jogador, anima a cena e pede um novo quadro
 static void atualizar()
 {
     int agora = glutGet(GLUT_ELAPSED_TIME);
@@ -52,6 +120,7 @@ static void atualizar()
     float frente = (float)teclas['w'] - (float)teclas['s'];
     float lado = (float)teclas['d'] - (float)teclas['a'];
     moverCamera(frente, lado, dt, correndo);
+    atualizarCena(dt);
 
     glutPostRedisplay();
 }
@@ -70,6 +139,8 @@ static void teclaPressionada(unsigned char tecla, int, int)
 
     switch (tecla) {
     case 27:  glutLeaveMainLoop(); break;   // Esc
+    case 'e': interagir(alvoNaMira()); break;
+    case 'l': interagir(INTERRUPTOR); break;
     }
 }
 
@@ -108,6 +179,9 @@ static void iniciarOpenGL()
     glShadeModel(GL_SMOOTH);  // Gouraud: cor interpolada entre os vértices
     glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);   // reflexo especular calculado com a posição real do olho
     glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);   // reflexo não é escurecido pela textura
+
+    glEnable(GL_BLEND);       // transparência (fundo do HUD)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 int main(int argc, char** argv)

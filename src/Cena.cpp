@@ -1,9 +1,11 @@
 #include "Cena.h"
+#include "Camera.h"
 
 #include <GL/freeglut.h>
 
 #include <cmath>
 
+Estado estado;
 
 // Posição das carteiras dos alunos (3 fileiras x 4 colunas)
 static const float FILEIRAS_Z[] = {-1.2f, 0.3f, 1.8f};
@@ -11,6 +13,25 @@ static const float COLUNAS_X[] = {-3.3f, -1.1f, 1.1f, 3.3f};
 
 // Posição (x, z) das 4 luminárias da sala
 static const float LUMINARIAS[4][2] = {{-2.3f, -1.6f}, {2.3f, -1.6f}, {-2.3f, 1.8f}, {2.3f, 1.8f}};
+
+// ---------------------------------------------------------------------------
+// Animação
+// ---------------------------------------------------------------------------
+float aproximar(float atual, float alvo, float passo)
+{
+    if (atual < alvo) return std::fmin(atual + passo, alvo);
+    return std::fmax(atual - passo, alvo);
+}
+
+float suavizar(float t)
+{
+    return t * t * (3 - 2 * t);
+}
+
+void atualizarCena(float dt)
+{
+    estado.tempo += dt;
+}
 
 // ---------------------------------------------------------------------------
 // Iluminação (pipeline fixo: GL_LIGHT0 a GL_LIGHT7)
@@ -47,9 +68,10 @@ void configurarLuzes()
     glLightfv(GL_LIGHT0, GL_SPECULAR, corSol);
     glEnable(GL_LIGHT0);
 
-    // GL_LIGHT1 a GL_LIGHT4: luminárias da sala
+    // GL_LIGHT1 a GL_LIGHT4: luminárias da sala (controladas pelo interruptor)
     for (int i = 0; i < 4; i++)
-        luzPontual(GL_LIGHT1 + i, LUMINARIAS[i][0], ALTURA - 0.35f, LUMINARIAS[i][1], 0.42f);
+        luzPontual(GL_LIGHT1 + i, LUMINARIAS[i][0], ALTURA - 0.35f, LUMINARIAS[i][1],
+                   estado.luzesLigadas ? 0.42f : 0.0f);
 
     // GL_LIGHT5: luminária do corredor (sempre acesa)
     luzPontual(GL_LIGHT5, 6.4f, ALTURA - 0.35f, -0.6f, 0.35f);
@@ -103,6 +125,24 @@ void desenharCena()
     posicionar(4.6f, 0, 3.6f);
     desenharLixeira();
     glPopMatrix();
+
+    // Luminárias no teto
+    for (const auto& l : LUMINARIAS) {
+        glPushMatrix();
+        posicionar(l[0], ALTURA, l[1]);
+        desenharLampada(estado.luzesLigadas);
+        glPopMatrix();
+    }
+    glPushMatrix();
+    posicionar(6.4f, ALTURA, -0.6f);   // corredor
+    desenharLampada(true);
+    glPopMatrix();
+
+    // Objetos presos nas paredes: girados para ficarem de frente para a sala
+    glPushMatrix();
+    posicionar(X_MAX, 1.3f, -1.9f, -90);
+    desenharInterruptor();
+    glPopMatrix();
 }
 
 // ---------------------------------------------------------------------------
@@ -137,4 +177,58 @@ bool colide(float x, float z)
     for (const Caixa& c : outros)
         if (bate(c, x, z)) return true;
     return false;
+}
+
+// ---------------------------------------------------------------------------
+// Interação: o alvo é o objeto mais próximo (até 2,6 m) que esteja na mira
+// ---------------------------------------------------------------------------
+struct PontoInterativo {
+    Alvo alvo;
+    float x, y, z;
+};
+
+static const PontoInterativo PONTOS[] = {
+    {INTERRUPTOR, X_MAX, 1.3f, -1.9f},
+};
+
+Alvo alvoNaMira()
+{
+    float olhar[3];
+    direcaoCamera(olhar);
+
+    Alvo melhor = NENHUM;
+    float melhorNota = -1e9f;
+    for (const PontoInterativo& p : PONTOS) {
+        float vx = p.x - camera.x, vy = p.y - camera.y, vz = p.z - camera.z;
+        float distancia = std::sqrt(vx * vx + vy * vy + vz * vz);
+        if (distancia > 2.6f) continue;
+
+        // Produto escalar: 1 = olhando exatamente para o objeto
+        float alinhamento = (vx * olhar[0] + vy * olhar[1] + vz * olhar[2]) / distancia;
+        if (alinhamento < 0.75f) continue;
+
+        float nota = alinhamento - distancia * 0.05f;
+        if (nota > melhorNota) {
+            melhorNota = nota;
+            melhor = p.alvo;
+        }
+    }
+    return melhor;
+}
+
+void interagir(Alvo alvo)
+{
+    switch (alvo) {
+    case INTERRUPTOR:     estado.luzesLigadas = !estado.luzesLigadas; break;
+    case NENHUM:          break;
+    }
+}
+
+const char* dica(Alvo alvo)
+{
+    switch (alvo) {
+    case INTERRUPTOR:     return estado.luzesLigadas ? "[E] Desligar luzes" : "[E] Ligar luzes";
+    case NENHUM:          break;
+    }
+    return "";
 }
