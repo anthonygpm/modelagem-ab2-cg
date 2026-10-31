@@ -32,6 +32,7 @@ extern const int NUM_PAREDES;
 // ---------------------------------------------------------------------------
 void configurarLuzes();   // chamar depois de posicionar a câmera
 void desenharCena();
+bool colide(float x, float z);   // o jogador em (x, z) bate em algo?
 
 // ---------------------------------------------------------------------------
 // Objetos (pasta objects/). Cada função desenha o objeto na origem;

@@ -104,3 +104,37 @@ void desenharCena()
     desenharLixeira();
     glPopMatrix();
 }
+
+// ---------------------------------------------------------------------------
+// Colisão: o jogador é um quadrado de 0,5 m visto de cima, do chão até 1,8 m
+// ---------------------------------------------------------------------------
+static bool bate(const Caixa& c, float x, float z)
+{
+    const float raio = 0.25f;
+    return x + raio > c.x0 && x - raio < c.x1 &&
+           z + raio > c.z0 && z - raio < c.z1 &&
+           c.y1 > 0.1f && c.y0 < 1.8f;   // ignora o que está acima da cabeça
+}
+
+bool colide(float x, float z)
+{
+    for (int i = 0; i < NUM_PAREDES; i++)
+        if (bate(PAREDES[i], x, z)) return true;
+
+    for (float cz : FILEIRAS_Z) {
+        for (float cx : COLUNAS_X) {
+            Caixa mesa = {cx - 0.45f, 0, cz - 0.28f, cx + 0.45f, 0.75f, cz + 0.28f};
+            Caixa cadeira = {cx - 0.23f, 0, cz + 0.22f, cx + 0.23f, 0.9f, cz + 0.68f};
+            if (bate(mesa, x, z) || bate(cadeira, x, z)) return true;
+        }
+    }
+
+    const Caixa outros[] = {
+        {-3.3f, 0, -2.75f, -1.9f, 0.76f, -2.05f},   // mesa do professor
+        {-2.83f, 0, -3.38f, -2.37f, 0.9f, -2.92f},  // cadeira do professor
+        {4.43f, 0, 3.43f, 4.77f, 0.44f, 3.77f},     // lixeira
+    };
+    for (const Caixa& c : outros)
+        if (bate(c, x, z)) return true;
+    return false;
+}

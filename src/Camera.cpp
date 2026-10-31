@@ -1,4 +1,5 @@
 #include "Camera.h"
+#include "Cena.h"
 
 #include <GL/freeglut.h>
 
@@ -49,6 +50,7 @@ void moverCamera(float frente, float lado, float dt, bool correndo)
     dx = dx / tam * velocidade * dt;
     dz = dz / tam * velocidade * dt;
 
-    camera.x += dx;
-    camera.z += dz;
+    // Testa cada eixo separadamente: assim o jogador desliza ao encostar na parede
+    if (!colide(camera.x + dx, camera.z)) camera.x += dx;
+    if (!colide(camera.x, camera.z + dz)) camera.z += dz;
 }
