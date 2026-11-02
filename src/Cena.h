@@ -35,8 +35,12 @@ extern const int NUM_PAREDES;
 struct Estado {
     bool luzesLigadas = true;
     bool portaAberta = false;
+    bool laminasFechadas = false;
+    bool persianaRecolhida = false;
 
     float porta = 0;          // 0 fechada, 1 aberta
+    float laminas = 0;        // 0 lâminas na horizontal, 1 fechadas
+    float recolhimento = 0;   // 0 persiana baixada, 1 recolhida no topo
     float tempo = 0;          // segundos desde o início
 };
 extern Estado estado;
@@ -59,6 +63,7 @@ enum Alvo {
     NENHUM,
     INTERRUPTOR,
     PORTA,
+    JANELA,
 };
 Alvo alvoNaMira();
 void interagir(Alvo alvo);
@@ -76,3 +81,6 @@ void desenharLixeira();
 void desenharLampada(bool acesa);
 void desenharInterruptor();
 void desenharPorta();
+void desenharJanela();
+void desenharVidroJanela();
+float luzDaJanela();   // quanto da luz do sol passa pela persiana (0 a 1)

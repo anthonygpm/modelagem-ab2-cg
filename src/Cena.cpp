@@ -34,6 +34,8 @@ void atualizarCena(float dt)
 
     // Cada animação anda em direção ao estado pedido (velocidade = 1/duração)
     estado.porta        = aproximar(estado.porta,        estado.portaAberta ? 1.0f : 0.0f,       dt * 0.9f);
+    estado.laminas      = aproximar(estado.laminas,      estado.laminasFechadas ? 1.0f : 0.0f,   dt * 1.2f);
+    estado.recolhimento = aproximar(estado.recolhimento, estado.persianaRecolhida ? 1.0f : 0.0f, dt * 0.5f);
 }
 
 // ---------------------------------------------------------------------------
@@ -57,9 +59,9 @@ static void luzPontual(GLenum luz, float x, float y, float z, float intensidade)
 
 void configurarLuzes()
 {
-    float sol = 1;
+    float sol = luzDaJanela();
 
-    // Luz ambiente: ilumina tudo por igual, para nada ficar totalmente preto
+    // Luz ambiente: mais clara quando a persiana deixa a luz do dia entrar
     const float ambiente[] = {0.10f + 0.12f * sol, 0.10f + 0.13f * sol, 0.11f + 0.14f * sol, 1};
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambiente);
 
@@ -148,8 +150,19 @@ void desenharCena()
     glPopMatrix();
 
     glPushMatrix();
+    posicionar(X_MIN, 1.6f, 0, 90);
+    desenharJanela();
+    glPopMatrix();
+
+    glPushMatrix();
     posicionar(X_MAX, 0, -2.85f, -90);
     desenharPorta();
+    glPopMatrix();
+
+    // Vidro por último: objetos transparentes precisam do resto já desenhado
+    glPushMatrix();
+    posicionar(X_MIN, 1.6f, 0, 90);
+    desenharVidroJanela();
     glPopMatrix();
 }
 
@@ -202,6 +215,7 @@ struct PontoInterativo {
 static const PontoInterativo PONTOS[] = {
     {INTERRUPTOR, X_MAX, 1.3f, -1.9f},
     {PORTA, X_MAX, 1.1f, -2.85f},
+    {JANELA, X_MIN, 1.6f, 0},
 };
 
 Alvo alvoNaMira()
@@ -234,6 +248,7 @@ void interagir(Alvo alvo)
     switch (alvo) {
     case INTERRUPTOR:     estado.luzesLigadas = !estado.luzesLigadas; break;
     case PORTA:           estado.portaAberta = !estado.portaAberta; break;
+    case JANELA:          estado.laminasFechadas = !estado.laminasFechadas; break;
     case NENHUM:          break;
     }
 }
@@ -243,6 +258,8 @@ const char* dica(Alvo alvo)
     switch (alvo) {
     case INTERRUPTOR:     return estado.luzesLigadas ? "[E] Desligar luzes" : "[E] Ligar luzes";
     case PORTA:           return estado.portaAberta ? "[E] Fechar porta" : "[E] Abrir porta";
+    case JANELA:          return estado.laminasFechadas ? "[E] Abrir persiana    [R] Recolher / baixar"
+                                                        : "[E] Fechar persiana    [R] Recolher / baixar";
     case NENHUM:          break;
     }
     return "";

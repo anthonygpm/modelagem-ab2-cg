@@ -140,6 +140,8 @@ static void teclaPressionada(unsigned char tecla, int, int)
     switch (tecla) {
     case 27:  glutLeaveMainLoop(); break;   // Esc
     case 'e': interagir(alvoNaMira()); break;
+    case 'q': interagir(JANELA); break;
+    case 'r': estado.persianaRecolhida = !estado.persianaRecolhida; break;
     case 'l': interagir(INTERRUPTOR); break;
     }
 }
@@ -180,7 +182,7 @@ static void iniciarOpenGL()
     glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);   // reflexo especular calculado com a posição real do olho
     glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);   // reflexo não é escurecido pela textura
 
-    glEnable(GL_BLEND);       // transparência (fundo do HUD)
+    glEnable(GL_BLEND);       // transparência (vidro e HUD)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
