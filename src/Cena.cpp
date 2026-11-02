@@ -31,6 +31,9 @@ float suavizar(float t)
 void atualizarCena(float dt)
 {
     estado.tempo += dt;
+
+    // Cada animação anda em direção ao estado pedido (velocidade = 1/duração)
+    estado.porta        = aproximar(estado.porta,        estado.portaAberta ? 1.0f : 0.0f,       dt * 0.9f);
 }
 
 // ---------------------------------------------------------------------------
@@ -143,6 +146,11 @@ void desenharCena()
     posicionar(X_MAX, 1.3f, -1.9f, -90);
     desenharInterruptor();
     glPopMatrix();
+
+    glPushMatrix();
+    posicionar(X_MAX, 0, -2.85f, -90);
+    desenharPorta();
+    glPopMatrix();
 }
 
 // ---------------------------------------------------------------------------
@@ -176,7 +184,11 @@ bool colide(float x, float z)
     };
     for (const Caixa& c : outros)
         if (bate(c, x, z)) return true;
-    return false;
+
+    // Porta: fechada bloqueia o vão; aberta, a folha fica encostada na parede
+    Caixa porta = estado.porta < 0.5f ? Caixa{5.0f, 0, -3.4f, 5.2f, 2.15f, -2.3f}
+                                      : Caixa{4.05f, 0, -3.45f, 5.05f, 2.1f, -3.25f};
+    return bate(porta, x, z);
 }
 
 // ---------------------------------------------------------------------------
@@ -189,6 +201,7 @@ struct PontoInterativo {
 
 static const PontoInterativo PONTOS[] = {
     {INTERRUPTOR, X_MAX, 1.3f, -1.9f},
+    {PORTA, X_MAX, 1.1f, -2.85f},
 };
 
 Alvo alvoNaMira()
@@ -220,6 +233,7 @@ void interagir(Alvo alvo)
 {
     switch (alvo) {
     case INTERRUPTOR:     estado.luzesLigadas = !estado.luzesLigadas; break;
+    case PORTA:           estado.portaAberta = !estado.portaAberta; break;
     case NENHUM:          break;
     }
 }
@@ -228,6 +242,7 @@ const char* dica(Alvo alvo)
 {
     switch (alvo) {
     case INTERRUPTOR:     return estado.luzesLigadas ? "[E] Desligar luzes" : "[E] Ligar luzes";
+    case PORTA:           return estado.portaAberta ? "[E] Fechar porta" : "[E] Abrir porta";
     case NENHUM:          break;
     }
     return "";

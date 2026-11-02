@@ -44,6 +44,7 @@ add_executable(sala-de-aula
     src/objects/Lixeira.cpp
     src/objects/Lampada.cpp
     src/objects/Interruptor.cpp
+    src/objects/Porta.cpp
 )
 
 target_include_directories(sala-de-aula PRIVATE src)

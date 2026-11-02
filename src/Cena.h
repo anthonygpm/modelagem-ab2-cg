@@ -34,7 +34,9 @@ extern const int NUM_PAREDES;
 // ---------------------------------------------------------------------------
 struct Estado {
     bool luzesLigadas = true;
+    bool portaAberta = false;
 
+    float porta = 0;          // 0 fechada, 1 aberta
     float tempo = 0;          // segundos desde o início
 };
 extern Estado estado;
@@ -56,6 +58,7 @@ bool colide(float x, float z);   // o jogador em (x, z) bate em algo?
 enum Alvo {
     NENHUM,
     INTERRUPTOR,
+    PORTA,
 };
 Alvo alvoNaMira();
 void interagir(Alvo alvo);
@@ -72,3 +75,4 @@ void desenharQuadro();
 void desenharLixeira();
 void desenharLampada(bool acesa);
 void desenharInterruptor();
+void desenharPorta();
