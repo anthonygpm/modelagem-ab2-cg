@@ -42,8 +42,10 @@ add_executable(sala-de-aula
     src/objects/Cadeira.cpp
     src/objects/Quadro.cpp
     src/objects/Lixeira.cpp
+    src/objects/Notebook.cpp
     src/objects/Lampada.cpp
     src/objects/Interruptor.cpp
+    src/objects/ArCondicionado.cpp
     src/objects/Janela.cpp
     src/objects/Porta.cpp
 )

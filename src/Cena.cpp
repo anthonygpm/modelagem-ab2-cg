@@ -36,6 +36,11 @@ void atualizarCena(float dt)
     estado.porta        = aproximar(estado.porta,        estado.portaAberta ? 1.0f : 0.0f,       dt * 0.9f);
     estado.laminas      = aproximar(estado.laminas,      estado.laminasFechadas ? 1.0f : 0.0f,   dt * 1.2f);
     estado.recolhimento = aproximar(estado.recolhimento, estado.persianaRecolhida ? 1.0f : 0.0f, dt * 0.5f);
+    estado.notebook     = aproximar(estado.notebook,     estado.notebookAberto ? 1.0f : 0.0f,    dt * 1.2f);
+
+    // Aleta do ar: oscila com um seno quando ligado; fecha quando desligado
+    float alvoAleta = estado.arLigado ? 15 + 25 * std::sin(estado.tempo * 1.2f) : -85;
+    estado.aleta = aproximar(estado.aleta, alvoAleta, dt * 90);
 }
 
 // ---------------------------------------------------------------------------
@@ -122,6 +127,11 @@ void desenharCena()
     glPopMatrix();
 
     glPushMatrix();
+    posicionar(-2.45f, 0.76f, -2.45f, 180);   // em cima da mesa do professor
+    desenharNotebook();
+    glPopMatrix();
+
+    glPushMatrix();
     posicionar(0, 0, Z_MIN);
     desenharQuadro();
     glPopMatrix();
@@ -147,6 +157,11 @@ void desenharCena()
     glPushMatrix();
     posicionar(X_MAX, 1.3f, -1.9f, -90);
     desenharInterruptor();
+    glPopMatrix();
+
+    glPushMatrix();
+    posicionar(0, 2.55f, Z_MAX, 180);
+    desenharArCondicionado();
     glPopMatrix();
 
     glPushMatrix();
@@ -216,6 +231,8 @@ static const PontoInterativo PONTOS[] = {
     {INTERRUPTOR, X_MAX, 1.3f, -1.9f},
     {PORTA, X_MAX, 1.1f, -2.85f},
     {JANELA, X_MIN, 1.6f, 0},
+    {AR_CONDICIONADO, 0, 2.55f, Z_MAX},
+    {NOTEBOOK, -2.45f, 0.91f, -2.45f},
 };
 
 Alvo alvoNaMira()
@@ -249,6 +266,8 @@ void interagir(Alvo alvo)
     case INTERRUPTOR:     estado.luzesLigadas = !estado.luzesLigadas; break;
     case PORTA:           estado.portaAberta = !estado.portaAberta; break;
     case JANELA:          estado.laminasFechadas = !estado.laminasFechadas; break;
+    case AR_CONDICIONADO: estado.arLigado = !estado.arLigado; break;
+    case NOTEBOOK:        estado.notebookAberto = !estado.notebookAberto; break;
     case NENHUM:          break;
     }
 }
@@ -260,6 +279,8 @@ const char* dica(Alvo alvo)
     case PORTA:           return estado.portaAberta ? "[E] Fechar porta" : "[E] Abrir porta";
     case JANELA:          return estado.laminasFechadas ? "[E] Abrir persiana    [R] Recolher / baixar"
                                                         : "[E] Fechar persiana    [R] Recolher / baixar";
+    case AR_CONDICIONADO: return estado.arLigado ? "[E] Desligar ar-condicionado" : "[E] Ligar ar-condicionado";
+    case NOTEBOOK:        return estado.notebookAberto ? "[E] Fechar notebook" : "[E] Abrir notebook";
     case NENHUM:          break;
     }
     return "";
