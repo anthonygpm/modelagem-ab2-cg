@@ -48,6 +48,7 @@ add_executable(sala-de-aula
     src/objects/ArCondicionado.cpp
     src/objects/Janela.cpp
     src/objects/Porta.cpp
+    src/objects/Projetor.cpp
 )
 
 target_include_directories(sala-de-aula PRIVATE src)

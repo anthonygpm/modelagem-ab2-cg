@@ -54,6 +54,7 @@ void carregarTexturas()
     tex.quadro   = carregar("quadro.png");
     tex.porta    = carregar("porta.png");
     tex.notebook = carregar("tela_notebook.png");
+    tex.slide    = carregar("slide.png");
 
     // A cor da textura é multiplicada pela cor calculada pela iluminação
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);

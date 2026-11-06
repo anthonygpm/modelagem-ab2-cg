@@ -39,12 +39,14 @@ struct Estado {
     bool persianaRecolhida = false;
     bool arLigado = false;
     bool notebookAberto = false;
+    bool projetorLigado = false;
 
     float porta = 0;          // 0 fechada, 1 aberta
     float laminas = 0;        // 0 lâminas na horizontal, 1 fechadas
     float recolhimento = 0;   // 0 persiana baixada, 1 recolhida no topo
     float aleta = -85;        // ângulo da aleta do ar-condicionado (graus)
     float notebook = 0;       // 0 fechado, 1 aberto
+    float tela = 0;           // 0 tela de projeção enrolada, 1 toda aberta
     float tempo = 0;          // segundos desde o início
 };
 extern Estado estado;
@@ -70,6 +72,7 @@ enum Alvo {
     JANELA,
     AR_CONDICIONADO,
     NOTEBOOK,
+    PROJETOR,
 };
 Alvo alvoNaMira();
 void interagir(Alvo alvo);
@@ -92,3 +95,6 @@ void desenharVidroJanela();
 float luzDaJanela();   // quanto da luz do sol passa pela persiana (0 a 1)
 void desenharArCondicionado();
 void desenharNotebook();
+void desenharProjetor();
+void desenharTelaProjecao();
+void desenharPainelProjetor();

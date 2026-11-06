@@ -8,6 +8,7 @@ struct Texturas {
     GLuint madeira, quadro;
     GLuint porta;
     GLuint notebook;
+    GLuint slide;
 };
 extern Texturas tex;
 

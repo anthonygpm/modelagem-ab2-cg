@@ -37,6 +37,7 @@ void atualizarCena(float dt)
     estado.laminas      = aproximar(estado.laminas,      estado.laminasFechadas ? 1.0f : 0.0f,   dt * 1.2f);
     estado.recolhimento = aproximar(estado.recolhimento, estado.persianaRecolhida ? 1.0f : 0.0f, dt * 0.5f);
     estado.notebook     = aproximar(estado.notebook,     estado.notebookAberto ? 1.0f : 0.0f,    dt * 1.2f);
+    estado.tela         = aproximar(estado.tela,         estado.projetorLigado ? 1.0f : 0.0f,    dt * 0.45f);
 
     // Aleta do ar: oscila com um seno quando ligado; fecha quando desligado
     float alvoAleta = estado.arLigado ? 15 + 25 * std::sin(estado.tempo * 1.2f) : -85;
@@ -174,6 +175,22 @@ void desenharCena()
     desenharPorta();
     glPopMatrix();
 
+    // Projetor no teto, tela sobre o quadro e painel de controle na parede
+    glPushMatrix();
+    posicionar(0, ALTURA, 0.3f);
+    desenharProjetor();
+    glPopMatrix();
+
+    glPushMatrix();
+    posicionar(0, 2.82f, -3.82f);
+    desenharTelaProjecao();
+    glPopMatrix();
+
+    glPushMatrix();
+    posicionar(2.3f, 1.3f, Z_MIN + 0.001f);
+    desenharPainelProjetor();
+    glPopMatrix();
+
     // Vidro por último: objetos transparentes precisam do resto já desenhado
     glPushMatrix();
     posicionar(X_MIN, 1.6f, 0, 90);
@@ -233,6 +250,7 @@ static const PontoInterativo PONTOS[] = {
     {JANELA, X_MIN, 1.6f, 0},
     {AR_CONDICIONADO, 0, 2.55f, Z_MAX},
     {NOTEBOOK, -2.45f, 0.91f, -2.45f},
+    {PROJETOR, 2.3f, 1.3f, Z_MIN},
 };
 
 Alvo alvoNaMira()
@@ -268,6 +286,7 @@ void interagir(Alvo alvo)
     case JANELA:          estado.laminasFechadas = !estado.laminasFechadas; break;
     case AR_CONDICIONADO: estado.arLigado = !estado.arLigado; break;
     case NOTEBOOK:        estado.notebookAberto = !estado.notebookAberto; break;
+    case PROJETOR:        estado.projetorLigado = !estado.projetorLigado; break;
     case NENHUM:          break;
     }
 }
@@ -281,6 +300,8 @@ const char* dica(Alvo alvo)
                                                         : "[E] Fechar persiana    [R] Recolher / baixar";
     case AR_CONDICIONADO: return estado.arLigado ? "[E] Desligar ar-condicionado" : "[E] Ligar ar-condicionado";
     case NOTEBOOK:        return estado.notebookAberto ? "[E] Fechar notebook" : "[E] Abrir notebook";
+    case PROJETOR:        return estado.projetorLigado ? "[E] Desligar projetor e subir tela"
+                                                       : "[E] Ligar projetor e descer tela";
     case NENHUM:          break;
     }
     return "";
