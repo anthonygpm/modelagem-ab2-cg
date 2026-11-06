@@ -13,9 +13,9 @@ static float radianos(float graus) { return graus * 3.14159265f / 180.0f; }
 void direcaoCamera(float d[3])
 {
     float yaw = radianos(camera.yaw), pitch = radianos(camera.pitch);
-    d[0] = std::cos(yaw) * std::cos(pitch);
-    d[1] = std::sin(pitch);
-    d[2] = std::sin(yaw) * std::cos(pitch);
+    d[0] = std::cos(yaw) * std::cos(pitch); // componente x
+    d[1] = std::sin(pitch); // componente y(altura)
+    d[2] = std::sin(yaw) * std::cos(pitch); // componente z
 }
 
 void aplicarCamera()

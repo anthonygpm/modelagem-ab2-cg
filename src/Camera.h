@@ -4,7 +4,7 @@
 struct Camera {
     float x = 0.0f, y = 1.65f, z = 3.3f;   // 1,65 m = altura dos olhos
     float yaw = -90.0f;                    // -90° = olhando para o quadro (-Z)
-    float pitch = -5.0f;
+    float pitch = -5.0f;                   // inclinação cima/baixo
 };
 extern Camera camera;
 
