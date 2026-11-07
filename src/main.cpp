@@ -19,10 +19,11 @@
 static int largura = 1280, altura = 720;
 static bool teclas[256];          // teclas pressionadas no momento (W, A, S, D)
 static bool correndo = false;     // Shift pressionado
+static bool mostrarAjuda = false;
 static int tempoAnterior = 0;     // em milissegundos
 
 // ---------------------------------------------------------------------------
-// HUD: mira e dica de interação, desenhadas em 2D por cima da cena
+// HUD: mira, dica de interação e ajuda, desenhados em 2D por cima da cena
 // ---------------------------------------------------------------------------
 static void texto(float x, float y, const char* s)
 {
@@ -51,6 +52,35 @@ static void caixaDeTexto(float x, float y, const char* s)
     fundo(x - 14, y - 12, x + larguraTexto(s) + 14, y + 24);
     glColor3f(1, 1, 1);
     texto(x, y, s);
+}
+
+static void desenharAjuda()
+{
+    const char* linhas[][2] = {
+        {"W A S D", "Andar"},
+        {"Shift", "Correr"},
+        {"Mouse", "Olhar ao redor"},
+        {"E", "Interagir com o objeto na mira"},
+        {"Q", "Girar laminas da persiana"},
+        {"R", "Recolher / baixar persiana"},
+        {"L", "Ligar / desligar luzes"},
+        {"F", "Tela cheia"},
+        {"H", "Mostrar / ocultar ajuda"},
+        {"Esc", "Sair"},
+    };
+    const int n = sizeof(linhas) / sizeof(linhas[0]);
+    float cx = largura / 2.0f, topo = altura / 2.0f + n * 15 + 30;
+
+    fundo(cx - 230, topo - n * 30 - 30, cx + 230, topo + 20);
+    glColor3f(1, 1, 1);
+    texto(cx - larguraTexto("CONTROLES") / 2.0f, topo - 10, "CONTROLES");
+    for (int i = 0; i < n; i++) {
+        float y = topo - 50 - i * 30;
+        glColor3f(1, 0.82f, 0.25f);
+        texto(cx - 30 - larguraTexto(linhas[i][0]), y, linhas[i][0]);
+        glColor3f(1, 1, 1);
+        texto(cx, y, linhas[i][1]);
+    }
 }
 
 static void desenharHUD()
@@ -82,6 +112,9 @@ static void desenharHUD()
 
     if (alvo != NENHUM)
         caixaDeTexto(cx - larguraTexto(dica(alvo)) / 2.0f, altura * 0.2f, dica(alvo));
+
+    if (mostrarAjuda) desenharAjuda();
+    else caixaDeTexto(24, 24, "[H] Ajuda");
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
@@ -143,6 +176,8 @@ static void teclaPressionada(unsigned char tecla, int, int)
     case 'q': interagir(JANELA); break;
     case 'r': estado.persianaRecolhida = !estado.persianaRecolhida; break;
     case 'l': interagir(INTERRUPTOR); break;
+    case 'h': mostrarAjuda = !mostrarAjuda; break;
+    case 'f': glutFullScreenToggle(); break;
     }
 }
 
