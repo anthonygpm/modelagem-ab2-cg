@@ -8,9 +8,9 @@ Projeto da disciplina de **Computação Gráfica** — Universidade Federal de A
 
 | Nome | GitHub |
 |---|---|
-| Anthony | [@usuario](https://github.com/usuario) |
-| Integrante 2 | [@usuario](https://github.com/usuario) |
-| Integrante 3 | [@usuario](https://github.com/usuario) |
+| Anthony Moura | [@anthonygpm](https://github.com/anthonygpm) |
+| Vinicius Santiago | [@viniciussantz](https://github.com/viniciussantz) |
+| Lucas Teodosio | [@Lucasteodosioo](https://github.com/Lucasteodosioo) |
 
 ## Funcionalidades
 
